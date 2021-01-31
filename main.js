@@ -5,11 +5,13 @@ import { JSDOM } from "jsdom";
 // eslint-disable-next-line import/extensions
 import keywords from "./keywords.js";
 
-const url = `http://www.g2b.go.kr:8081/ep/preparation/prestd/preStdPublishList.do?taskClCds=5&recordCountPerPage=100`;
+const listUrl = `http://www.g2b.go.kr:8081/ep/preparation/prestd/preStdPublishList.do?taskClCds=5&recordCountPerPage=100`;
+const detailUrl =
+  "https://www.g2b.go.kr:8143/ep/preparation/prestd/preStdDtl.do?preStdRegNo=";
 const output = "./output.json";
 
 (async () => {
-  const { data } = await axios.get(url, {
+  const { data } = await axios.get(listUrl, {
     responseType: "arraybuffer",
   });
   const searched = [];
@@ -29,6 +31,20 @@ const output = "./output.json";
       });
     }
   });
+  await Promise.all(
+    searched.map(async (s) => {
+      const detailPage = await axios.get(detailUrl + s.num, {
+        responseType: "arraybuffer",
+      });
+      const domDetail = new JSDOM(iconv.decode(detailPage.data, "EUC-KR"));
+      const [, , price, endDate] = domDetail.window.document.querySelector(
+        "table.table_info > tbody"
+      ).children;
+      const dd = s;
+      dd.price = price.children[1].textContent;
+      dd.end_date = endDate.children[3].textContent;
+    })
+  );
   fs.writeFile(
     output,
     JSON.stringify(searched, null, 1).replace(/\\t|\\n/g, ""),
