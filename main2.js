@@ -47,11 +47,15 @@ const output = "./output2.json";
         responseType: "arraybuffer",
       });
       const domDetail = new JSDOM(iconv.decode(detailPage.data, "EUC-KR"));
-      const price = domDetail.window.document
-        .querySelectorAll("div.section > table.table_info")[3]
-        .querySelector("tbody").children[1].children[3];
-      const dd = s;
-      dd.price = price.textContent.trim();
+      try {
+        const price = domDetail.window.document
+          .querySelectorAll("div.section > table.table_info")[3]
+          .querySelector("tbody").children[1].children[3];
+        const dd = s;
+        dd.price = price.textContent.trim();
+      } catch {
+        console.log(detailUrl);
+      }
     })
   );
   fs.writeFile(
