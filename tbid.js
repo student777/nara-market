@@ -1,5 +1,4 @@
 import axios from "axios";
-import fs from "fs";
 import iconv from "iconv-lite";
 import { JSDOM } from "jsdom";
 // eslint-disable-next-line import/extensions
@@ -13,9 +12,7 @@ const listUrl = `http://www.g2b.go.kr:8101/ep/tbid/tbidList.do?searchType=1&task
   today.getMonth() + 1
 }/${today.getDate()}&recordCountPerPage=100`;
 
-const output = "./output2.json";
-
-(async () => {
+export default async function tbid() {
   const { data } = await axios.get(listUrl, {
     responseType: "arraybuffer",
   });
@@ -58,9 +55,5 @@ const output = "./output2.json";
       }
     })
   );
-  fs.writeFile(
-    output,
-    JSON.stringify(searched, null, 1).replace(/\\t|\\n/g, ""),
-    () => {}
-  );
-})();
+  return searched;
+}
