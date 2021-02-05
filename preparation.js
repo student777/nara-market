@@ -2,13 +2,10 @@ import axios from "axios";
 import iconv from "iconv-lite";
 import { JSDOM } from "jsdom";
 // eslint-disable-next-line import/extensions
-import keywords from "./keywords.js";
+import reg from "./keywords.js";
 
-const listUrl = `http://www.g2b.go.kr:8081/ep/preparation/prestd/preStdPublishList.do?taskClCds=5&recordCountPerPage=100`;
-const detailUrl =
-  "https://www.g2b.go.kr:8143/ep/preparation/prestd/preStdDtl.do?preStdRegNo=";
-
-export default async function prepatation() {
+export default async function prepatation(from, to) {
+  const listUrl = `http://www.g2b.go.kr:8081/ep/preparation/prestd/preStdPublishList.do?taskClCds=5&recordCountPerPage=100&fromRcptDt=${from}&toRcptDt=${to}`;
   const { data } = await axios.get(listUrl, {
     responseType: "arraybuffer",
   });
@@ -16,7 +13,6 @@ export default async function prepatation() {
   const dom = new JSDOM(iconv.decode(data, "EUC-KR"));
   const table = dom.window.document.querySelector("div.results > table");
   const rowList = table.querySelectorAll("tbody > tr");
-  const reg = new RegExp(keywords.join("|"));
   rowList.forEach((row) => {
     const [, num, , name, agency, datetime] = row.children;
     const name2 = name.textContent.replace(/\\t|\\n/g, "");
@@ -31,7 +27,8 @@ export default async function prepatation() {
   });
   await Promise.all(
     searched.map(async (s) => {
-      const detailPage = await axios.get(detailUrl + s.num, {
+      const detailUrl = `https://www.g2b.go.kr:8143/ep/preparation/prestd/preStdDtl.do?preStdRegNo=${s.num}`;
+      const detailPage = await axios.get(detailUrl, {
         responseType: "arraybuffer",
       });
       const domDetail = new JSDOM(iconv.decode(detailPage.data, "EUC-KR"));

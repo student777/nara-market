@@ -2,17 +2,10 @@ import axios from "axios";
 import iconv from "iconv-lite";
 import { JSDOM } from "jsdom";
 // eslint-disable-next-line import/extensions
-import keywords from "./keywords.js";
+import reg from "./keywords.js";
 
-const today = new Date();
-const weekBefore = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000);
-const listUrl = `http://www.g2b.go.kr:8101/ep/tbid/tbidList.do?searchType=1&taskClCds=5&searchDtType=1&fromBidDt=${weekBefore.getFullYear()}/${
-  weekBefore.getMonth() + 1
-}/${weekBefore.getDate()}&toBidDt=${today.getFullYear()}/${
-  today.getMonth() + 1
-}/${today.getDate()}&recordCountPerPage=100`;
-
-export default async function tbid() {
+export default async function tbid(from, to) {
+  const listUrl = `http://www.g2b.go.kr:8101/ep/tbid/tbidList.do?searchType=1&taskClCds=5&searchDtType=1&fromBidDt=${from}&toBidDt=${to}&recordCountPerPage=100`;
   const { data } = await axios.get(listUrl, {
     responseType: "arraybuffer",
   });
@@ -20,7 +13,6 @@ export default async function tbid() {
   const dom = new JSDOM(iconv.decode(data, "EUC-KR"));
   const table = dom.window.document.querySelector("div.results > table");
   const rowList = table.querySelectorAll("tbody > tr");
-  const reg = new RegExp(keywords.join("|"));
   const datereg = /(.+)\((.+)\)/;
   rowList.forEach((row) => {
     const [, num, , name, , agency, , datetime] = row.children;
@@ -51,7 +43,7 @@ export default async function tbid() {
         const dd = s;
         dd.price = price.textContent.trim();
       } catch {
-        console.log(detailUrl);
+        console.log(`[ERROR] bid in ${detailUrl}`);
       }
     })
   );
