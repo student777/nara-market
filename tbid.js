@@ -7,11 +7,13 @@ import { from, to, countPerPage } from "./config.js";
 
 export default async function tbid() {
   const count = await checkTotalCount();
+  console.log(`[LOG] ${from} ~ ${to} 게시된 ${count} 개의 입찰정보 검색 중..`);
   const endPage =  Math.ceil(count / countPerPage);
   const searched = [];
   await Promise.all(
     Array.from(Array(endPage), (_, index) => index + 1).map(async (pageNum) => {
       (await parseTable(pageNum)).forEach(d => searched.push(d));
+      console.log(`[LOG] 입찰정보 ${pageNum} 번째 페이지 검색 완료`)
     })
   );
   await Promise.all(
