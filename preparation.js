@@ -8,12 +8,12 @@ import { from, to, countPerPage } from "./config.js";
 export default async function preparation() {
   const count = await checkTotalCount();
   console.log(`[LOG] ${from} ~ ${to} 게시된 ${count} 개의 사전규격 검색 중..`);
-  const endPage =  Math.ceil(count / countPerPage);
+  const endPage = Math.ceil(count / countPerPage);
   const searched = [];
   await Promise.all(
     Array.from(Array(endPage), (_, index) => index + 1).map(async (pageNum) => {
-      (await parseTable(pageNum)).forEach(d => searched.push(d));
-      console.log(`[LOG] 사전규격 ${pageNum} 번째 페이지 검색 완료`)
+      (await parseTable(pageNum)).forEach((d) => searched.push(d));
+      console.log(`[LOG] 사전규격 ${pageNum} 번째 페이지 검색 완료`);
     })
   );
   await Promise.all(
@@ -32,10 +32,11 @@ async function checkTotalCount() {
     responseType: "arraybuffer",
   });
   const dom = new JSDOM(iconv.decode(data, "EUC-KR"));
-  const totalCount = dom.window.document.querySelector("div.inforight > span.page").textContent.match(/\d+/)[0];
+  const totalCount = dom.window.document
+    .querySelector("div.inforight > span.page")
+    .textContent.match(/\d+/)[0];
   return totalCount;
 }
-
 
 async function parseTable(page) {
   const url = `http://www.g2b.go.kr:8081/ep/preparation/prestd/preStdPublishList.do?taskClCds=5&recordCountPerPage=${countPerPage}&fromRcptDt=${from}&toRcptDt=${to}&currentPageNo=${page}`;
