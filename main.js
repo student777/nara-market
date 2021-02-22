@@ -13,14 +13,13 @@ import sendmail from "./sendmail.js";
     pre: preData,
     tbid: tbidData,
   };
-  fs.writeFile(
+  fs.writeFileSync(
     "./database.json",
-    JSON.stringify(output, null, 1).replace(/\\t|\\n/g, ""),
-    () => {}
+    JSON.stringify(output, null, 1).replace(/\\t|\\n/g, "")
   );
   console.log(`[LOG] 사전규격 data ${preData.length} 건 발견`);
   console.log(`[LOG] 입찰정보 data ${tbidData.length} 건 발견`);
-  sendmail();
+  await sendmail();
   console.log("[LOG] 메일 전송 완료");
   console.log("[LOG] 수고했어요 내일봐요😚😚 그럼 이만 *.*");
 })();
