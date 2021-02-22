@@ -37,8 +37,8 @@ async function checkTotalCount() {
 }
 
 
-async function parseTable(pageNum) {
-  const listUrl = `http://www.g2b.go.kr:8081/ep/preparation/prestd/preStdPublishList.do?taskClCds=5&recordCountPerPage=${countPerPage}&fromRcptDt=${from}&toRcptDt=${to}&useTotalCount=Y`;
+async function parseTable(page) {
+  const listUrl = `http://www.g2b.go.kr:8081/ep/preparation/prestd/preStdPublishList.do?taskClCds=5&recordCountPerPage=${countPerPage}&fromRcptDt=${from}&toRcptDt=${to}&currentPageNo=${page}`;
   const { data } = await axios.get(listUrl, {
     responseType: "arraybuffer",
   });
