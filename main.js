@@ -2,6 +2,7 @@ import fs from "fs";
 import fetchPrepatation from "./preparation.js";
 import fetchBid from "./tbid.js";
 import reg from "./keywords.js";
+import sendmail from "./sendmail.js";
 
 (async () => {
   console.log(`[LOG] 개미는 (뚠뚠) 🐜🐜 오늘도 (뚠뚠) 🐜🐜 열심히 일을 하네🎵`);
@@ -19,5 +20,7 @@ import reg from "./keywords.js";
   );
   console.log(`[LOG] 사전규격 data ${preData.length} 건 발견`);
   console.log(`[LOG] 입찰정보 data ${tbidData.length} 건 발견`);
-  console.log(`[LOG] 수고했어요 내일봐요😚😚 그럼 이만 *.*`);
+  sendmail();
+  console.log("[LOG] 메일 전송 완료");
+  console.log("[LOG] 수고했어요 내일봐요😚😚 그럼 이만 *.*");
 })();
