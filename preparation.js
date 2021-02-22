@@ -5,8 +5,17 @@ import { JSDOM } from "jsdom";
 import reg from "./keywords.js";
 import { from, to } from "./fromto.js";
 
-export default async function prepatation() {
-  const searched = await parseTable();
+const countPerPage = 100;
+
+export default async function preparation() {
+  const count = await checkTotalCount();
+  const endPage =  Math.ceil(count / countPerPage);
+  const searched = [];
+  await Promise.all(
+    Array.from(Array(endPage), (_, index) => index + 1).map(async (pageNum) => {
+      (await parseTable(pageNum)).forEach(d => searched.push(d));
+    })
+  );
   await Promise.all(
     searched.map(async (s) => {
       const { price, end_date } = await parseDetail(s.num);
@@ -17,12 +26,23 @@ export default async function prepatation() {
   return searched;
 }
 
+async function checkTotalCount() {
+  const url = `http://www.g2b.go.kr:8081/ep/preparation/prestd/preStdPublishList.do?taskClCds=5&fromRcptDt=${from}&toRcptDt=${to}&useTotalCount=Y`;
+  const { data } = await axios.get(url, {
+    responseType: "arraybuffer",
+  });
+  const dom = new JSDOM(iconv.decode(data, "EUC-KR"));
+  const totalCount = dom.window.document.querySelector("div.inforight > span.page").textContent.match(/\d+/)[0];
+  return totalCount;
+}
+
+
 async function parseTable(pageNum) {
-  const listUrl = `http://www.g2b.go.kr:8081/ep/preparation/prestd/preStdPublishList.do?taskClCds=5&recordCountPerPage=100&fromRcptDt=${from}&toRcptDt=${to}`;
+  const listUrl = `http://www.g2b.go.kr:8081/ep/preparation/prestd/preStdPublishList.do?taskClCds=5&recordCountPerPage=${countPerPage}&fromRcptDt=${from}&toRcptDt=${to}&useTotalCount=Y`;
   const { data } = await axios.get(listUrl, {
     responseType: "arraybuffer",
   });
-  const searched = [];
+  const ret = [];
   const dom = new JSDOM(iconv.decode(data, "EUC-KR"));
   const table = dom.window.document.querySelector("div.results > table");
   const rowList = table.querySelectorAll("tbody > tr");
@@ -30,7 +50,7 @@ async function parseTable(pageNum) {
     const [, num, , name, agency, datetime] = row.children;
     const name2 = name.textContent.replace(/\\t|\\n/g, "");
     if (reg.test(name2)) {
-      searched.push({
+      ret.push({
         num: num.textContent,
         name: name.textContent,
         agency: agency.textContent,
@@ -38,7 +58,7 @@ async function parseTable(pageNum) {
       });
     }
   });
-  return searched;
+  return ret;
 }
 
 async function parseDetail(num) {
