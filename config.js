@@ -6,3 +6,4 @@ export const from = `${yest.getFullYear()}/${
 export const to = `${today.getFullYear()}/${
   today.getMonth() + 1
 }/${today.getDate()}`;
+export const countPerPage = 100; 

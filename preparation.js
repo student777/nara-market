@@ -3,9 +3,7 @@ import iconv from "iconv-lite";
 import { JSDOM } from "jsdom";
 // eslint-disable-next-line import/extensions
 import reg from "./keywords.js";
-import { from, to } from "./fromto.js";
-
-const countPerPage = 100;
+import { from, to, countPerPage } from "./config.js";
 
 export default async function preparation() {
   const count = await checkTotalCount();
@@ -38,8 +36,8 @@ async function checkTotalCount() {
 
 
 async function parseTable(page) {
-  const listUrl = `http://www.g2b.go.kr:8081/ep/preparation/prestd/preStdPublishList.do?taskClCds=5&recordCountPerPage=${countPerPage}&fromRcptDt=${from}&toRcptDt=${to}&currentPageNo=${page}`;
-  const { data } = await axios.get(listUrl, {
+  const url = `http://www.g2b.go.kr:8081/ep/preparation/prestd/preStdPublishList.do?taskClCds=5&recordCountPerPage=${countPerPage}&fromRcptDt=${from}&toRcptDt=${to}&currentPageNo=${page}`;
+  const { data } = await axios.get(url, {
     responseType: "arraybuffer",
   });
   const ret = [];
@@ -62,12 +60,12 @@ async function parseTable(page) {
 }
 
 async function parseDetail(num) {
-  const detailUrl = `https://www.g2b.go.kr:8143/ep/preparation/prestd/preStdDtl.do?preStdRegNo=${num}`;
-  const detailPage = await axios.get(detailUrl, {
+  const url = `https://www.g2b.go.kr:8143/ep/preparation/prestd/preStdDtl.do?preStdRegNo=${num}`;
+  const { data } = await axios.get(url, {
     responseType: "arraybuffer",
   });
-  const domDetail = new JSDOM(iconv.decode(detailPage.data, "EUC-KR"));
-  const [, , price, endDate] = domDetail.window.document.querySelector(
+  const dom = new JSDOM(iconv.decode(data, "EUC-KR"));
+  const [, , price, endDate] = dom.window.document.querySelector(
     "table.table_info > tbody"
   ).children;
   return {
