@@ -6,7 +6,10 @@ import {
   clientSecret,
   refreshToken,
   accessToken,
+  fromUser,
+  toUser,
 } from "./secret.js";
+import { from } from "./config.js";
 import fs from "fs";
 
 export default async function sendmail() {
@@ -26,9 +29,9 @@ export default async function sendmail() {
     },
   });
   let info = await transporter.sendMail({
-    from: '"Crawling Bot" <web@ccc.expert>',
-    to: "web@ccc.expert",
-    subject: "Hello ✔",
+    from: fromUser,
+    to: toUser,
+    subject: `오늘의 나라장터 - ${from}`,
     html: renderToString(pre, tbid),
   });
   return info;
