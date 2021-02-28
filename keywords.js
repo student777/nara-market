@@ -15,4 +15,4 @@ const keywords = [
   "인문",
 ];
 
-export default new RegExp(keywords.join("|"));
+module.exports = new RegExp(keywords.join("|"));

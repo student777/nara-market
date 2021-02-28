@@ -35,7 +35,7 @@ const style = `
   }
 `;
 
-export default function renderToString(pre, tbid) {
+module.exports = (pre, tbid) => {
   const preRow = pre.map((row) => {
     const url = `https://www.g2b.go.kr:8143/ep/preparation/prestd/preStdDtl.do?preStdRegNo=${row.num}`;
     return `
@@ -80,4 +80,4 @@ export default function renderToString(pre, tbid) {
       </body>
     </html>
  `;
-}
+};

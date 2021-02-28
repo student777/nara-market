@@ -1,11 +1,10 @@
-import axios from "axios";
-import iconv from "iconv-lite";
-import { JSDOM } from "jsdom";
-// eslint-disable-next-line import/extensions
-import reg from "./keywords.js";
-import { from, to, countPerPage } from "./config.js";
+const axios = require("axios");
+const iconv = require("iconv-lite");
+const { JSDOM } = require("jsdom");
+const reg = require("./keywords.js");
+const { from, to, countPerPage } = require("./config.js");
 
-export default async function preparation() {
+module.exports = async () => {
   const count = await checkTotalCount();
   console.log(`[LOG] ${from} ~ ${to} 게시된 ${count} 개의 사전규격 검색 중..`);
   const endPage = Math.ceil(count / countPerPage);
@@ -24,7 +23,7 @@ export default async function preparation() {
     })
   );
   return searched;
-}
+};
 
 async function checkTotalCount() {
   const url = `http://www.g2b.go.kr:8081/ep/preparation/prestd/preStdPublishList.do?taskClCds=5&fromRcptDt=${from}&toRcptDt=${to}&useTotalCount=Y`;

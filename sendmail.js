@@ -1,6 +1,6 @@
-import nodemailer from "nodemailer";
-import renderToString from "./table.js";
-import {
+const nodemailer = require("nodemailer");
+const renderToString = require("./table.js");
+const {
   user,
   clientId,
   clientSecret,
@@ -8,10 +8,10 @@ import {
   accessToken,
   fromUser,
   toUser,
-} from "./secret.js";
-import { from } from "./config.js";
+} = require("./secret.js");
+const { from } = require("./config.js");
 
-export default async function sendmail(pre, tbid) {
+module.exports = async (pre, tbid) => {
   let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     secure: true,
@@ -33,4 +33,4 @@ export default async function sendmail(pre, tbid) {
     html: renderToString(pre, tbid),
   });
   return info;
-}
+};
