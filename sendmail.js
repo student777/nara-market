@@ -10,10 +10,8 @@ import {
   toUser,
 } from "./secret.js";
 import { from } from "./config.js";
-import fs from "fs";
 
-export default async function sendmail() {
-  const { pre, tbid } = JSON.parse(fs.readFileSync("database.json", "utf8"));
+export default async function sendmail(pre, tbid) {
   let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     secure: true,
