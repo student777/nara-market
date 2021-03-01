@@ -1,4 +1,4 @@
 node_modules
-secret.js
+env.sh
 .DS_Store
 out.html

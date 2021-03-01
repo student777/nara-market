@@ -1,14 +1,5 @@
 const nodemailer = require("nodemailer");
 const renderToString = require("./table.js");
-const {
-  user,
-  clientId,
-  clientSecret,
-  refreshToken,
-  accessToken,
-  fromUser,
-  toUser,
-} = require("./secret.js");
 const { from } = require("./config.js");
 
 module.exports = async (pre, tbid) => {
@@ -18,17 +9,17 @@ module.exports = async (pre, tbid) => {
     port: 465,
     auth: {
       type: "OAuth2",
-      user,
-      clientId,
-      clientSecret,
-      refreshToken,
-      accessToken,
+      user: process.env.user,
+      clientId: process.env.clientId,
+      clientSecret: process.env.clientSecret,
+      refreshToken: process.env.refreshToken,
+      accessToken: process.env.accessToken,
       expires: 3599,
     },
   });
   const info = await transporter.sendMail({
-    from: fromUser,
-    to: toUser,
+    from: process.env.fromUser,
+    to: process.env.toUser,
     subject: `오늘의 나라장터 - ${from}`,
     html: renderToString(pre, tbid),
   });
