@@ -12,21 +12,21 @@ const {
 const { from } = require("./config.js");
 
 module.exports = async (pre, tbid) => {
-  let transporter = nodemailer.createTransport({
+  const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     secure: true,
     port: 465,
     auth: {
       type: "OAuth2",
-      user: user,
-      clientId: clientId,
-      clientSecret: clientSecret,
-      refreshToken: refreshToken,
-      accessToken: accessToken,
+      user,
+      clientId,
+      clientSecret,
+      refreshToken,
+      accessToken,
       expires: 3599,
     },
   });
-  let info = await transporter.sendMail({
+  const info = await transporter.sendMail({
     from: fromUser,
     to: toUser,
     subject: `오늘의 나라장터 - ${from}`,

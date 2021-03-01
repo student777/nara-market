@@ -4,27 +4,6 @@ const { JSDOM } = require("jsdom");
 const reg = require("./keywords.js");
 const { from, to, countPerPage } = require("./config.js");
 
-module.exports = async () => {
-  const count = await checkTotalCount();
-  console.log(`[LOG] ${from} ~ ${to} 게시된 ${count} 개의 사전규격 검색 중..`);
-  const endPage = Math.ceil(count / countPerPage);
-  const searched = [];
-  await Promise.all(
-    Array.from(Array(endPage), (_, index) => index + 1).map(async (pageNum) => {
-      (await parseTable(pageNum)).forEach((d) => searched.push(d));
-      console.log(`[LOG] 사전규격 ${pageNum} 번째 페이지 검색 완료`);
-    })
-  );
-  await Promise.all(
-    searched.map(async (s) => {
-      const { price, end_date } = await parseDetail(s.num);
-      s.price = price;
-      s.end_date = end_date;
-    })
-  );
-  return searched;
-};
-
 async function checkTotalCount() {
   const url = `http://www.g2b.go.kr:8081/ep/preparation/prestd/preStdPublishList.do?taskClCds=5&fromRcptDt=${from}&toRcptDt=${to}&useTotalCount=Y`;
   const { data } = await axios.get(url, {
@@ -42,7 +21,7 @@ async function parseTable(page) {
   const { data } = await axios.get(url, {
     responseType: "arraybuffer",
   });
-  const ret = [];
+  const rows = [];
   const dom = new JSDOM(iconv.decode(data, "EUC-KR"));
   const table = dom.window.document.querySelector("div.results > table");
   const rowList = table.querySelectorAll("tbody > tr");
@@ -50,7 +29,7 @@ async function parseTable(page) {
     const [, num, , name, agency, datetime] = row.children;
     const name2 = name.textContent.replace(/\\t|\\n/g, "");
     if (reg.test(name2)) {
-      ret.push({
+      rows.push({
         num: num.textContent,
         name: name.textContent,
         agency: agency.textContent,
@@ -58,11 +37,11 @@ async function parseTable(page) {
       });
     }
   });
-  return ret;
+  return rows;
 }
 
-async function parseDetail(num) {
-  const url = `https://www.g2b.go.kr:8143/ep/preparation/prestd/preStdDtl.do?preStdRegNo=${num}`;
+async function parseDetail(row) {
+  const url = `https://www.g2b.go.kr:8143/ep/preparation/prestd/preStdDtl.do?preStdRegNo=${row.num}`;
   const { data } = await axios.get(url, {
     responseType: "arraybuffer",
   });
@@ -73,5 +52,23 @@ async function parseDetail(num) {
   return {
     price: price.children[1].textContent,
     end_date: endDate.children[3].textContent,
+    ...row,
   };
 }
+
+module.exports = async () => {
+  const count = await checkTotalCount();
+  console.log(`[LOG] ${from} ~ ${to} 게시된 ${count} 개의 사전규격 검색 중..`);
+  const endPage = Math.ceil(count / countPerPage);
+  const pages = [];
+  for (let i = 1; i <= endPage; i += 1) pages.push(i);
+  const searched = [];
+  await Promise.all(
+    pages.map(async (page) => {
+      const rows = await parseTable(page);
+      rows.forEach((row) => searched.push(row));
+      console.log(`[LOG] 사전규격 ${page} 번째 페이지 검색 완료`);
+    })
+  );
+  return Promise.all(searched.map((row) => parseDetail(row)));
+};
