@@ -1,7 +1,6 @@
 const axios = require("axios");
 const iconv = require("iconv-lite");
 const { JSDOM } = require("jsdom");
-const reg = require("./keywords.js");
 const { from, to, countPerPage } = require("./config.js");
 
 async function checkTotalCount() {
@@ -25,6 +24,7 @@ async function parseTable(page) {
   const dom = new JSDOM(iconv.decode(data, "EUC-KR"));
   const table = dom.window.document.querySelector("div.results > table");
   const rowList = table.querySelectorAll("tbody > tr");
+  const reg = new RegExp(process.env.keywords);
   const datereg = /(.+)\((.+)\)/;
   rowList.forEach((row) => {
     const [, num, , name, , agency, , datetime] = row.children;

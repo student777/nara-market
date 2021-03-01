@@ -1,14 +1,13 @@
 const fs = require("fs");
 const fetchPrepatation = require("./preparation.js");
 const fetchBid = require("./tbid.js");
-const reg = require("./keywords.js");
 const sendmail = require("./sendmail.js");
 const renderToString = require("./table.js");
 
 exports.main = async (_, res) => {
   const log = [];
   log.push(`[LOG] 개미는 (뚠뚠) 🐜🐜 오늘도 (뚠뚠) 🐜🐜 열심히 일을 하네🎵`);
-  log.push(`[LOG] 지정된 키워드: ${reg}`);
+  log.push(`[LOG] 지정된 키워드: ${process.env.keywords}`);
   const preData = await fetchPrepatation();
   const tbidData = await fetchBid();
   log.push(`[LOG] 사전규격 data ${preData.length} 건 발견`);
