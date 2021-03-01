@@ -28,15 +28,14 @@ async function parseTable(page) {
   const datereg = /(.+)\((.+)\)/;
   rowList.forEach((row) => {
     const [, num, , name, , agency, , datetime] = row.children;
-    const name2 = name.textContent.replace(/\\t|\\n/g, "");
-    const [, dateStart, dateEnd] = datetime.textContent.match(datereg);
-    if (reg.test(name2)) {
+    const [, dateUpload, dateDue] = datetime.textContent.match(datereg);
+    if (reg.test(name.textContent)) {
       rows.push({
         num: num.textContent,
         name: name.textContent,
         agency: agency.textContent,
-        datetime: dateStart,
-        date_end: dateEnd,
+        dateUpload,
+        dateDue,
       });
     }
   });

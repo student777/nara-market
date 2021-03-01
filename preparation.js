@@ -26,14 +26,13 @@ async function parseTable(page) {
   const table = dom.window.document.querySelector("div.results > table");
   const rowList = table.querySelectorAll("tbody > tr");
   rowList.forEach((row) => {
-    const [, num, , name, agency, datetime] = row.children;
-    const name2 = name.textContent.replace(/\\t|\\n/g, "");
-    if (reg.test(name2)) {
+    const [, num, , name, agency, date] = row.children;
+    if (reg.test(name.textContent)) {
       rows.push({
         num: num.textContent,
-        name: name.textContent,
-        agency: agency.textContent,
-        datetime: datetime.textContent,
+        name: name.textContent.replace(/\t|\n/g, ""),
+        agency: agency.textContent.replace(/\t|\n/g, ""),
+        date: date.textContent.replace(/\t|\n/g, ""),
       });
     }
   });
@@ -46,12 +45,11 @@ async function parseDetail(row) {
     responseType: "arraybuffer",
   });
   const dom = new JSDOM(iconv.decode(data, "EUC-KR"));
-  const [, , price, endDate] = dom.window.document.querySelector(
+  const [, , price] = dom.window.document.querySelector(
     "table.table_info > tbody"
   ).children;
   return {
-    price: price.children[1].textContent,
-    end_date: endDate.children[3].textContent,
+    price: price.children[1].textContent.replace(/\t|\n/g, ""),
     ...row,
   };
 }

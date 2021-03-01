@@ -40,10 +40,10 @@ module.exports = (pre, tbid) => {
     const url = `https://www.g2b.go.kr:8143/ep/preparation/prestd/preStdDtl.do?preStdRegNo=${row.num}`;
     return `
       <tr>
-        <td><a href=${url}>${row.num}</a></td>
+        <td><a href="${url}">${row.num}</a></td>
         <td>${row.name}</td>
         <td>${row.agency}</td>
-        <td>${row.datetime}</td>
+        <td>${row.date}</td>
         <td>${row.price}</td>
       </tr>
     `;
@@ -53,10 +53,10 @@ module.exports = (pre, tbid) => {
     const url = `http://www.g2b.go.kr:8081/ep/invitation/publish/bidInfoDtl.do?bidno=${bidno}&bidseq=${bidseq}&releaseYn=Y&taskClCd=5`;
     return `
       <tr>
-        <td><a href=${url}>${row.num}</a></td>
+        <td><a href="${url}">${row.num}</a></td>
         <td>${row.name}</td>
         <td>${row.agency}</td>
-        <td>${row.datetime}<br>(${row.date_end})</td>
+        <td>${row.dateUpload}<br>(${row.dateDue})</td>
         <td>${row.price}</td>
       </tr>
     `;
