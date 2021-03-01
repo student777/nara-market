@@ -52,9 +52,8 @@ async function parseDetail(row) {
   let price;
   try {
     price = dom.window.document
-      .querySelectorAll("div.section > table.table_info")[3]
-      .querySelector("tbody")
-      .children[1].children[3].textContent.trim();
+      .querySelectorAll("table[summary*='입찰금액'] div.tb_inner")[3]
+      .textContent.trim();
   } catch (e) {
     price = "?";
     console.error(`[ERROR] bid in ${url}`);
