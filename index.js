@@ -1,8 +1,6 @@
-const fs = require("fs");
 const fetchPrepatation = require("./preparation.js");
 const fetchBid = require("./tbid.js");
 const sendmail = require("./sendmail.js");
-const renderToString = require("./table.js");
 
 exports.main = async (_, res) => {
   const log = [];
@@ -18,13 +16,3 @@ exports.main = async (_, res) => {
   console.log(log.join("\n"));
   return res.send(log.join("<br>"));
 };
-
-if (require.main === module) {
-  (async () => {
-    const preData = await fetchPrepatation();
-    const tbidData = await fetchBid();
-    fs.writeFileSync("./out.html", renderToString(preData, tbidData), "utf8");
-    console.log(`[LOG] 사전규격 data ${preData.length} 건 발견`);
-    console.log(`[LOG] 입찰정보 data ${tbidData.length} 건 발견`);
-  })();
-}
